@@ -1,4 +1,11 @@
+export interface flowPairType {
+  num: number;
+  title: string;
+  flow: string;
+}
+
 export interface gptResType {
-    id: number;
-    flow: string[];
+  word: string;
+  topic: string;
+  flow: flowPairType[];
 }
