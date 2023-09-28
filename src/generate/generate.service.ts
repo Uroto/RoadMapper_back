@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { flowPairType, gptResType } from './generate.interface';
 import 'dotenv/config';
 import OpenAI from 'openai';
+import * as deepl from 'deepl-node';
 
 @Injectable()
 export class GenerateService {
     private gptMsg: string = "";
     private readonly openAI = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+    private readonly translator = new deepl.Translator(process.env.DEEPL_API_KEY);
 
     private gptResponse: gptResType = {
         word: '',
@@ -22,7 +24,20 @@ export class GenerateService {
         };
     
         const completion: OpenAI.Chat.ChatCompletion = await this.openAI.chat.completions.create(params);
-        this.gptMsg = completion.choices[0].message.content;
+        await this.translateSentence(completion.choices[0].message.content)
+            .then(res => {
+                this.gptMsg = res;
+            });
+    }
+
+    async translateSentence(str: string): Promise<string> {
+        const res = await this.translator.translateText(str, 'en', 'ja');
+        return res.text;
+    }
+
+    async translateWord(word: string): Promise<string> {
+        const res = await this.translator.translateText(word, null, 'en-US');
+        return res.text;
     }
     
 
@@ -52,12 +67,13 @@ export class GenerateService {
                     }
                     order++;
                     str = '';
+                    title ='';
                     i = j; // 数字の後の位置にジャンプ
                 } else {
                     str += this.gptMsg.substring(i, j);
                     i = j - 1; // 次のループのために位置を調整
                 }
-            } else if (char === ':' || char === '-') {
+            } else if (char === ':' || char === '：' || char === '-') {
                 title = str;
                 str = "";
             } else {
@@ -71,9 +87,10 @@ export class GenerateService {
     }
 
     async gptRes(word: string): Promise<gptResType> {
-        await this.generate(word);
+        const translatedWord = await this.translateWord(word);
+        await this.generate(translatedWord);
         this.strSplit();
-        this.gptResponse.word = word;
+        this.gptResponse.word = translatedWord;
         return this.gptResponse;
     }
 }
