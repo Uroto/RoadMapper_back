@@ -6,7 +6,9 @@ export class GenerateController {
   constructor(private generateService: GenerateService) {}
 
   @Get()
-  gptRes(@Query('word') word: string) {
-    return this.generateService.gptRes(word);
+  gptRes(@Query('word') word: string,
+         @Query('level') level: string,
+         @Query('time') time: string,) {
+    return this.generateService.gptRes(word, level, time);
   }
 }

@@ -16,10 +16,10 @@ export class GenerateService {
         flow: []
     };
 
-    async generate(word: string) {
+    async generate(word: string, level: string, time: string) {
         const params: OpenAI.Chat.ChatCompletionCreateParams = {
             model: 'gpt-3.5-turbo-0613',
-            messages: [{ role: 'user', content: `Please describe the steps to learn ${word} in as short a step-by-step sequence as possible.` }],
+            messages: [{ role: 'user', content: `Please tell me how to learn ${word} in ${time}, in order and as concisely as possible for a ${level}. (format: 1. title:content 2. ...)` }],
             stream: false,
         };
     
@@ -73,7 +73,7 @@ export class GenerateService {
                     str += this.gptMsg.substring(i, j);
                     i = j - 1; // 次のループのために位置を調整
                 }
-            } else if (char === ':' || char === '：' || char === '-') {
+            } else if (char === ':' || char === '：') {
                 title = str;
                 str = "";
             } else {
@@ -86,9 +86,9 @@ export class GenerateService {
         this.gptResponse.flow = flow;
     }
 
-    async gptRes(word: string): Promise<gptResType> {
+    async gptRes(word: string, level: string, time: string): Promise<gptResType> {
         const translatedWord = await this.translateWord(word);
-        await this.generate(translatedWord);
+        await this.generate(translatedWord, level, time);
         this.strSplit();
         this.gptResponse.word = translatedWord;
         return this.gptResponse;
