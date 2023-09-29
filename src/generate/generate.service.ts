@@ -3,6 +3,7 @@ import { flowPairType, gptResType } from './generate.interface';
 import 'dotenv/config';
 import OpenAI from 'openai';
 import * as deepl from 'deepl-node';
+import { resolve } from 'path';
 
 @Injectable()
 export class GenerateService {
@@ -139,6 +140,7 @@ Nest.jsのコミュニティやオンラインリソースを活用して、問�
     async gptRes(word: string): Promise<gptResType> {
         // const translatedWord = await this.translateWord(word);
         // await this.generate(translatedWord);
+        await new Promise(resolve => setTimeout(resolve, 3000));
         this.strSplit();
         // this.gptResponse.word = translatedWord;
         return this.gptResponse;
