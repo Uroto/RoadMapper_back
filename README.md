@@ -1,3 +1,4 @@
+🚨ChatGPTAPIのCreditが0$で不足しており現在機能しておりません
 <div align="center">
   <img src="./img/logo.png" width="70%">
   <div>新しい学びに最適な手順を</div>
